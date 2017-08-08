@@ -1,7 +1,8 @@
 import numpy as np
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.cross_validation import KFold
-from sklearn.datasets import load_iris
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
 
 def load_data(filename):
     file = open(filename, 'r')
@@ -14,8 +15,10 @@ def load_data(filename):
       dataset.append(line)
     return dataset
 
-def k_nearest_neighbor(features, labels, _n_neighbors, _n_folds):
+def knn_train(features, labels, _n_neighbors, _n_folds, normalize=False):
     classifier = KNeighborsClassifier(n_neighbors=_n_neighbors)
+    if normalize:
+        classifier = Pipeline([('norm', StandardScaler()), ('knn', classifier)])
     kf = KFold(len(features), n_folds=_n_folds, shuffle=True)
     acc_arr = []
     for training, testing in kf:
@@ -28,7 +31,7 @@ def k_nearest_neighbor(features, labels, _n_neighbors, _n_folds):
         cur_acc = np.mean(predictions == testing_labels)
         acc_arr.append(cur_acc)
     mean_acc = np.mean(acc_arr)
-    return acc_arr, mean_acc
+    return classifier, acc_arr, mean_acc
 
 dataset = load_data('seeds_dataset.txt')
 
@@ -36,7 +39,16 @@ features = [row[:len(row) - 1] for row in dataset]
 
 labels = [row[-1] for row in dataset]
 
-acc_arr, mean_acc = k_nearest_neighbor(features, labels, 5, 5)
+# Classify without normalizing features
+classifier, acc_arr, mean_acc = knn_train(features, labels, 5, 5, normalize=False)
 acc_arr = ["{:.2%}".format(e) for e in acc_arr]
-print (acc_arr)
-print ("{:.2%}".format(mean_acc))
+print ("Classify without normalizing features: ")
+print ("\t K-fold accuracy: ", acc_arr)
+print ("\t Mean accuracy: {:.2%}".format(mean_acc))
+
+# Classify using normalizing features
+classifier, acc_arr, mean_acc = knn_train(features, labels, 5, 5, normalize=True)
+acc_arr = ["{:.2%}".format(e) for e in acc_arr]
+print ("Classify using normalizing features: ")
+print ("\t K-fold accuracy: ", acc_arr)
+print ("\t Mean accuracy: {:.2%}".format(mean_acc))
