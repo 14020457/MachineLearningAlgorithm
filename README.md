@@ -1,2 +1,3 @@
 # MachineLearningAlgorithm
-This repository is used to public code of some machine learning algorithm
+This repository is used to public code of some machine learning algorithms.
+Some of libraries are used: scikit-learn, numpy, scipy...
