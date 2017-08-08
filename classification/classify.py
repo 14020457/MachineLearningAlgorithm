@@ -1,3 +1,5 @@
+# Using k_nearest_neighbors algorithm to classify data in seeds dataset
+
 import numpy as np
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.cross_validation import KFold
